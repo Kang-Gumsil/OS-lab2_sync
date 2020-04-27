@@ -1,33 +1,9 @@
 #include "BST.h"
 
-BST::BST() // »ý¼ºÀÚ, root¸¦ null·Î ÃÊ±âÈ­
+bool BST::insertNode(int num) // ÂºÂ¯Â°Ã¦
 {
-	root = 0;
-}
-
-Node* BST::search(int num) 
-{
-	// p¸¦ rootºÎÅÍ Â÷·Ê·Î ³»·Á°¡¸é¼­ Å½»ö
-	Node* p = root;
-	while (p)
-	{
-		if (p->data == num) // ¿øÇÏ´Â °ªÀ» Ã£¾ÒÀ¸¸é p¸®ÅÏ
-			return p;
-
-		else if (num > p->data)
-			p = p->rightChild;
-
-		else
-			p = p->leftChild;
-	}
-
-	return 0; // p°¡ nullÀÌ µÉ ¶§±îÁö ¸øÃ£À¸¸é Å½»ö ½ÇÆÐ, null ¸®ÅÏ
-}
-
-bool BST::insertNode(int num) // º¯°æ
-{
-	// p¸¦ rootºÎÅÍ p¸¦ ³ÖÀ» ÀÚ¸®±îÁö(null¸¸³¯¶§±îÁö) Å¸°í³»·Á°¡±â
-	// p¸¦ °»½ÅÇÏ±â Àü q¿¡ p¸¦ ³ÖÀ½ -> q´Â pÀÇ °»½Å Àü ³ëµå
+	// pÂ¸Â¦ rootÂºÃŽÃ…Ã pÂ¸Â¦ Â³Ã–Ã€Â» Ã€ÃšÂ¸Â®Â±Ã®ÃÃ¶(nullÂ¸Â¸Â³Â¯Â¶Â§Â±Ã®ÃÃ¶) Ã…Â¸Â°Ã­Â³Â»Â·ÃÂ°Â¡Â±Ã¢
+	// pÂ¸Â¦ Â°Â»Â½Ã…Ã‡ÃÂ±Ã¢ Ã€Ã¼ qÂ¿Â¡ pÂ¸Â¦ Â³Ã–Ã€Â½ -> qÂ´Ã‚ pÃ€Ã‡ Â°Â»Â½Ã… Ã€Ã¼ Â³Ã«ÂµÃ¥
 	Node* p = root, * q = 0;
 	bool returnValue = false;
 	while (p)
@@ -44,9 +20,9 @@ bool BST::insertNode(int num) // º¯°æ
 			p = p->leftChild;
 	}
 
-	p = new Node(num); // p´Â ´Ü¸»³ëµå, ÀÚ½Ä¸µÅ©´Â NULL
+	p = new Node(num); // pÂ´Ã‚ Â´ÃœÂ¸Â»Â³Ã«ÂµÃ¥, Ã€ÃšÂ½Ã„Â¸ÂµÃ…Â©Â´Ã‚ NULL
 
-	// Á¶°Ç¿¡ µû¶ó q¿Í p¸¦ ¿¬°á
+	// ÃÂ¶Â°Ã‡Â¿Â¡ ÂµÃ»Â¶Ã³ qÂ¿Ã pÂ¸Â¦ Â¿Â¬Â°Ã¡
 	if (!root)
 		root = p;
 
@@ -60,104 +36,18 @@ bool BST::insertNode(int num) // º¯°æ
 	return returnValue;
 }
 
-bool BST::deleteNode(int num)
-{
-	// »èÁ¦ÇÒ ³ëµå p Ã£°í, ¸¸¾à ¾øÀ¸¸é false ¸®ÅÏ
-	Node* p = search(num);
-	bool returnValue = false;
-	if (!p)
-		return false;
 
-	// pÀÇ ºÎ¸ð³ëµå q Ã£±â, ¸¸¾à qÀÇ ÀÚ½Ä Áß ÇÏ³ª°¡ p¸é Ã£Àº°Í
-	Node* q = root;
-	if (p != root)
-	{
-		while (1)
-		{
-			if (q->leftChild == p || q->rightChild == p)
-				break;
-
-			if (num > q->data)
-				q = q->rightChild;
-
-			else
-				q = q->leftChild;
-		}
-	}
-
-	// pÀÇ ÀÚ½Ä ¼ö
-	int count = 0;
-	if (p->leftChild) count++;
-	if (p->rightChild) count++;
-
-	if (count == 0) // ´Ü¸»³ëµå
-	{
-
-		// »èÁ¦ÇÒ ³ëµå¸¦ »èÁ¦
-		if (p == root)
-			root = 0;
-
-		else if (p == q->rightChild)
-			q->rightChild = 0;
-
-		else
-			q->leftChild = 0;
-	}
-
-	else if (count == 1) // ÀÚ½ÄÀÌ ÇÑ°³
-	{
-		// »èÁ¦ÇÒ ³ëµå¸¦ »èÁ¦ÇÏ°í, ±× ÀÚ¸®¸¦ ÀÚ½Ä³ëµå·Î Ã¤¿ò
-		Node* child;
-
-		if (p->rightChild)
-			child = p->rightChild;
-
-		else
-			child = p->leftChild;
-
-		// ´ëÃ¼ÇÑ ÀÚ½Ä³ëµå¿Í »èÁ¦ÇÒ ³ëµåÀÇ ºÎ¸ð³ëµå¿Í ¿¬°á
-		if (p == root)
-			root = child;
-
-		else if (p == q->rightChild)
-			q->rightChild = child;
-
-		else
-			q->leftChild = child;
-
-	}
-
-	else // ÀÚ½ÄÀÌ µÎ°³
-	{
-		Node* temp = q = p;
-
-		for (p = p->leftChild; p->rightChild; p = p->rightChild)
-			q = p;
-
-		if (q == temp)
-			q->leftChild = p->leftChild;
-
-		else
-			q->rightChild = p->leftChild;
-
-		temp->data = p->data; //µ¥ÀÌÅÍ ´ëÃ¼
-	}
-
-	delete p; // ½ÇÁ¦·Î »èÁ¦ÇÒ ³ëµå°¡ »èÁ¦µÈ °ÍÀÌ ¾Æ´Ï¶ó ´ëÃ¼µÉ ³ëµå°¡ »èÁ¦ 
-	return true;
+BST::BST() { // Â»Ã½Â¼ÂºÃ€Ãš, rootÂ¸Â¦ nullÂ·ÃŽ ÃƒÃŠÂ±Ã¢ÃˆÂ­
+	root = 0;
 }
 
-void BST::nodeTraversal() // driver
-{
+void BST::nodeTraversal() { // driver
 	nodeTraversal(root);
 }
 
-void BST::nodeTraversal(Node* currentNode) //workhorse
-{
-	if (currentNode)
-	{
+void BST::nodeTraversal(Node* currentNode) { //workhorse
+	if (currentNode) {
 		nodeTraversal(currentNode->leftChild);
 		cout << currentNode->data << " ";
 		nodeTraversal(currentNode->rightChild);
 	}
-}
