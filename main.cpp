@@ -51,40 +51,56 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include "CoarseBST.h"
-#include "LockBST.h"
+//#include "CoarseBST.h"
+//#include "LockBST.h"
 #include "LocklessBST.h"
+#include <pthread.h>
+
 using namespace std;
 LocklessBST t;
-void mutex_test(int numThreads, int numIteration, int isSync) {
 
-	// 쓰레드 배열 생성
-	pthread_t* pthreads = new pthread_t[numThreads];
-	// 인자 생성
-	int mutexAgrs[2] = { numIteration, isSync };
-	// 쓰레드 수행
-	for (int i = 0; i < numThreads; i++) {
-		pthread_create(pthread[i], NULL, testBST, mutexAgrs);
-	}
-	// join
-	for (int i = 0; i < numThreads; i++) {
-		pthread_join(pthread[i], NULL);
-	}
-	t.nodeTraversal();
-}
-void testBST(int[] mutexAgrs) {
-	// mutexAgrs[0] : number of Iteration
-	// mutexAgrs[1] : is Synchronization
-	if (mutexAgrs[1] == 0) { // 락X
-		for (int i = 0; i < mutexAgrs[0]; i++) {
+typedef struct __mutexArgs {
+	int numIteration;
+	bool isSync;
+} mutexArgs;
+
+static void* testBST(void* arg) {
+
+	mutexArgs *args = (mutexArgs *)arg;
+	if (args->isSync == false) { // 락X
+		for (int i = 0; i < args->numIteration; i++) {
 			t.insertNode(rand() % 1000);
 		}
-		for (int i = 0; i < mutexAgrs[0]; i++) {
+		for (int i = 0; i < args->numIteration; i++) {
 			t.deleteNode(rand() % 1000);
 		}
 	}
 }
+
+void mutex_test(int numThreads, int numIteration, bool isSync) {
+
+	// 쓰레드 배열 생성
+	pthread_t* pthreads = new pthread_t[numThreads];
+
+	// 인자 생성
+	mutexArgs mutex_arg;
+	mutex_arg.numIteration = numIteration;
+	mutex_arg.isSync = isSync;
+
+	// 쓰레드 수행
+	for (int i = 0; i < numThreads; i++) {
+		pthread_create(&pthreads[i], NULL, testBST, (void *)&mutex_arg);
+	}
+
+	// join
+	for (int i = 0; i < numThreads; i++) {
+		pthread_join(pthreads[i], NULL);
+	}
+	t.nodeTraversal();
+}
+
+
 int main() {
 	srand((unsigned int)time(NULL));
-	mutex_test(4, 1000, 0);
+	mutex_test(4, 1000, false);
 }
