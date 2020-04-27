@@ -5,7 +5,7 @@ BST::BST() // 생성자, root를 null로 초기화
 	root = 0;
 }
 
-Node* BST::search(int num)
+Node* BST::search(int num) 
 {
 	// p를 root부터 차례로 내려가면서 탐색
 	Node* p = root;
@@ -24,7 +24,7 @@ Node* BST::search(int num)
 	return 0; // p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
 }
 
-bool BST::insertNode(int num)
+bool BST::insertNode(int num) // 변경
 {
 	// p를 root부터 p를 넣을 자리까지(null만날때까지) 타고내려가기
 	// p를 갱신하기 전 q에 p를 넣음 -> q는 p의 갱신 전 노드
