@@ -6,14 +6,14 @@
 using namespace std;
 
 class BST {
-private:
+protected:
 	Node* root;
 
 public:
 	BST();
-	Node* search(int num);
-	bool insertNode(int num);
-	bool deleteNode(int num);
+	virtual Node* search(int num) = 0;
+	virtual bool insertNode(int num) = 0;
+	virtual bool deleteNode(int num) = 0;
 	void nodeTraversal();
 	void nodeTraversal(Node* currentNode);
 };
