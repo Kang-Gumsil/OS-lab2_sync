@@ -1,5 +1,9 @@
 #include "CoarseBST.h"
 
+CoarseBST::CoarseBST() {
+	root = 0;
+}
+
 Node* CoarseBST::search(int num)
 {
 	// p를 root부터 차례로 내려가면서 탐색

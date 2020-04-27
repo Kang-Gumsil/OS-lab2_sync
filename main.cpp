@@ -4,7 +4,7 @@ using namespace std;
 
 int main()
 {
-	BST t;
+	LocklessBST t;
 
 	t.insertNode(5); t.insertNode(3); t.insertNode(11); t.insertNode(3); t.insertNode(15);
 	t.insertNode(2); t.insertNode(8); t.insertNode(22); t.insertNode(20); t.insertNode(9);
