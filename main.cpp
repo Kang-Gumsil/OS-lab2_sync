@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include "CoarseBST.h"
 #include "LockBST.h"
 #include "LocklessBST.h"
@@ -14,22 +14,22 @@ int main()
 	t.nodeTraversal();
 	cout << endl << endl;
 
-	cout << "2 Å½»ö : " << t.search(2) << endl;
-	cout << "30 Å½»ö : " << t.search(30) << endl << endl;
+	cout << "2 íƒìƒ‰ : " << t.search(2) << endl;
+	cout << "30 íƒìƒ‰ : " << t.search(30) << endl << endl;
 
-	cout << "3 »èÁ¦ : " << t.deleteNode(3) << endl;
-	cout << "11 »èÁ¦ : " << t.deleteNode(11) << endl << endl;
+	cout << "3 ì‚­ì œ : " << t.deleteNode(3) << endl;
+	cout << "11 ì‚­ì œ : " << t.deleteNode(11) << endl << endl;
 
 	t.nodeTraversal();
 	cout << endl << endl;
 
 	t.insertNode(3); t.insertNode(17); t.insertNode(22); t.insertNode(7); t.insertNode(12);
 
-	cout << "22 Å½»ö : " << t.search(22) << endl;
-	cout << "30 Å½»ö : " << t.search(30) << endl << endl;
+	cout << "22 íƒìƒ‰ : " << t.search(22) << endl;
+	cout << "30 íƒìƒ‰ : " << t.search(30) << endl << endl;
 
-	cout << "17 »èÁ¦ : " << t.deleteNode(17) << endl;
-	cout << "23 »èÁ¦ : " << t.deleteNode(23) << endl << endl;
+	cout << "17 ì‚­ì œ : " << t.deleteNode(17) << endl;
+	cout << "23 ì‚­ì œ : " << t.deleteNode(23) << endl << endl;
 
 	t.nodeTraversal();
 	cout << endl << endl;

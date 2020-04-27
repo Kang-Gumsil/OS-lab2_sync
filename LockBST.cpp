@@ -1,4 +1,4 @@
-#include "LockBST.h"
+ï»¿#include "LockBST.h"
 
 LockBST::LockBST() {
 	root = 0;
@@ -6,7 +6,7 @@ LockBST::LockBST() {
 
 Node* LockBST::search(int num)
 {
-	// p¸¦ rootºÎÅÍ Â÷·Ê·Î ³»·Á°¡¸é¼­ Å½»ö
+	// pë¥¼ rootë¶€í„° ì°¨ë¡€ë¡œ ë‚´ë ¤ê°€ë©´ì„œ íƒìƒ‰
 	Node* p = root;
 	Node* returnValue = 0;
 	while (p)
@@ -23,21 +23,46 @@ Node* LockBST::search(int num)
 			p = p->leftChild;
 	}
 
-	return returnValue; // ¿øÇÏ´Â °ªÀ» Ã£¾ÒÀ¸¸é p¸®ÅÏ, p°¡ nullÀÌ µÉ ¶§±îÁö ¸øÃ£À¸¸é Å½»ö ½ÇÆÐ, null ¸®ÅÏ
+	return returnValue; // ì›í•˜ëŠ” ê°’ì„ ì°¾ì•˜ìœ¼ë©´ pë¦¬í„´, pê°€ nullì´ ë  ë•Œê¹Œì§€ ëª»ì°¾ìœ¼ë©´ íƒìƒ‰ ì‹¤íŒ¨, null ë¦¬í„´
 }
 
-bool LockBST::insertNode(int num) // »ðÀÔ
+Node* LockBST::searchForDelete(int num)
 {
-	// p¸¦ rootºÎÅÍ p¸¦ ³ÖÀ» ÀÚ¸®±îÁö(null¸¸³¯¶§±îÁö) Å¸°í³»·Á°¡±â
-	// p¸¦ °»½ÅÇÏ±â Àü q¿¡ p¸¦ ³ÖÀ½ -> q´Â pÀÇ °»½Å Àü ³ëµå
-	Node* p = root, * q = 0;
-	bool returnValue = false;
+	// pë¥¼ rootë¶€í„° ì°¨ë¡€ë¡œ ë‚´ë ¤ê°€ë©´ì„œ íƒìƒ‰
+	Node* p = root;
+	Node* returnValue = 0;
+	while (p)
+	{
+		if (p->data == num) {
+			returnValue = p;
+			break;
+		}
+
+		else if (num > p->data)
+			p = p->rightChild;
+
+		else
+			p = p->leftChild;
+	}
+
+	return returnValue; // ì›í•˜ëŠ” ê°’ì„ ì°¾ì•˜ìœ¼ë©´ pë¦¬í„´, pê°€ nullì´ ë  ë•Œê¹Œì§€ ëª»ì°¾ìœ¼ë©´ íƒìƒ‰ ì‹¤íŒ¨, null ë¦¬í„´
+}
+
+bool LockBST::insertNode(int num) // ì‚½ìž…
+{
+	// pë¥¼ rootë¶€í„° pë¥¼ ë„£ì„ ìžë¦¬ê¹Œì§€(nullë§Œë‚ ë•Œê¹Œì§€) íƒ€ê³ ë‚´ë ¤ê°€ê¸°
+	// pë¥¼ ê°±ì‹ í•˜ê¸° ì „ qì— pë¥¼ ë„£ìŒ -> qëŠ” pì˜ ê°±ì‹  ì „ ë…¸ë“œ
+	Node* p = root, *q = 0;
+	bool returnValue = true;
 	while (p)
 	{
 		q = p;
 
-		if (num == p->data)
-			return returnValue;
+		if (num == p->data) {
+			returnValue = false;
+			break;
+		}
+
 
 		if (num > p->data)
 			p = p->rightChild;
@@ -46,31 +71,35 @@ bool LockBST::insertNode(int num) // »ðÀÔ
 			p = p->leftChild;
 	}
 
-	p = new Node(num); // p´Â ´Ü¸»³ëµå, ÀÚ½Ä¸µÅ©´Â NULL
+	p = new Node(num); // pëŠ” ë‹¨ë§ë…¸ë“œ, ìžì‹ë§í¬ëŠ” NULL
 
-	// Á¶°Ç¿¡ µû¶ó q¿Í p¸¦ ¿¬°á
-	if (!root)
-		root = p;
+	if (returnValue) {
+		// ì¡°ê±´ì— ë”°ë¼ qì™€ pë¥¼ ì—°ê²°
+		if (!root) {
+			root = p;
+		}
 
-	else if (num > q->data)
-		q->rightChild = p;
+		else if (num > q->data) {
+			q->rightChild = p;
+		}
 
-	else
-		q->leftChild = p;
+		else {
+			q->leftChild = p;
+		}
+	}
 
-	returnValue = true;
 	return returnValue;
 }
 
 
 bool LockBST::deleteNode(int num)
 {
-	// »èÁ¦ÇÒ ³ëµå p Ã£°í, ¸¸¾à ¾øÀ¸¸é false ¸®ÅÏ
-	Node* p = search(num);
+	// ì‚­ì œí•  ë…¸ë“œ p ì°¾ê³ , ë§Œì•½ ì—†ìœ¼ë©´ false ë¦¬í„´
+	Node* p = searchForDelete(num);
 	bool returnValue = false;
 
 	if (p) {
-		// pÀÇ ºÎ¸ð³ëµå q Ã£±â, ¸¸¾à qÀÇ ÀÚ½Ä Áß ÇÏ³ª°¡ p¸é Ã£Àº°Í
+		// pì˜ ë¶€ëª¨ë…¸ë“œ q ì°¾ê¸°, ë§Œì•½ qì˜ ìžì‹ ì¤‘ í•˜ë‚˜ê°€ pë©´ ì°¾ì€ê²ƒ
 		Node* q = root;
 		if (p != root)
 		{
@@ -87,15 +116,15 @@ bool LockBST::deleteNode(int num)
 			}
 		}
 
-		// pÀÇ ÀÚ½Ä ¼ö
+		// pì˜ ìžì‹ ìˆ˜
 		int count = 0;
 		if (p->leftChild) count++;
 		if (p->rightChild) count++;
 
-		if (count == 0) // ´Ü¸»³ëµå
+		if (count == 0) // ë‹¨ë§ë…¸ë“œ
 		{
 
-			// »èÁ¦ÇÒ ³ëµå¸¦ »èÁ¦
+			// ì‚­ì œí•  ë…¸ë“œë¥¼ ì‚­ì œ
 			if (p == root)
 				root = 0;
 
@@ -106,9 +135,9 @@ bool LockBST::deleteNode(int num)
 				q->leftChild = 0;
 		}
 
-		else if (count == 1) // ÀÚ½ÄÀÌ ÇÑ°³
+		else if (count == 1) // ìžì‹ì´ í•œê°œ
 		{
-			// »èÁ¦ÇÒ ³ëµå¸¦ »èÁ¦ÇÏ°í, ±× ÀÚ¸®¸¦ ÀÚ½Ä³ëµå·Î Ã¤¿ò
+			// ì‚­ì œí•  ë…¸ë“œë¥¼ ì‚­ì œí•˜ê³ , ê·¸ ìžë¦¬ë¥¼ ìžì‹ë…¸ë“œë¡œ ì±„ì›€
 			Node* child;
 
 			if (p->rightChild)
@@ -117,7 +146,7 @@ bool LockBST::deleteNode(int num)
 			else
 				child = p->leftChild;
 
-			// ´ëÃ¼ÇÑ ÀÚ½Ä³ëµå¿Í »èÁ¦ÇÒ ³ëµåÀÇ ºÎ¸ð³ëµå¿Í ¿¬°á
+			// ëŒ€ì²´í•œ ìžì‹ë…¸ë“œì™€ ì‚­ì œí•  ë…¸ë“œì˜ ë¶€ëª¨ë…¸ë“œì™€ ì—°ê²°
 			if (p == root)
 				root = child;
 
@@ -129,7 +158,7 @@ bool LockBST::deleteNode(int num)
 
 		}
 
-		else // ÀÚ½ÄÀÌ µÎ°³
+		else // ìžì‹ì´ ë‘ê°œ
 		{
 			Node* temp = q = p;
 
@@ -142,10 +171,10 @@ bool LockBST::deleteNode(int num)
 			else
 				q->rightChild = p->leftChild;
 
-			temp->data = p->data; //µ¥ÀÌÅÍ ´ëÃ¼
+			temp->data = p->data; //ë°ì´í„° ëŒ€ì²´
 		}
 
-		delete p; // ½ÇÁ¦·Î »èÁ¦ÇÒ ³ëµå°¡ »èÁ¦µÈ °ÍÀÌ ¾Æ´Ï¶ó ´ëÃ¼µÉ ³ëµå°¡ »èÁ¦ 
+		delete p; // ì‹¤ì œë¡œ ì‚­ì œí•  ë…¸ë“œê°€ ì‚­ì œëœ ê²ƒì´ ì•„ë‹ˆë¼ ëŒ€ì²´ë  ë…¸ë“œê°€ ì‚­ì œ 
 		returnValue = true;
 	}
 

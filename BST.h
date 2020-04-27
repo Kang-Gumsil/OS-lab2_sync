@@ -1,4 +1,4 @@
-#ifndef BST_H
+﻿#ifndef BST_H
 #define BST_H
 #include <iostream>
 #include "Node.h"
@@ -12,6 +12,7 @@ protected:
 public:
 	BST();
 	virtual Node* search(int num) = 0;
+	virtual Node* searchForDelete(int num) = 0;
 	virtual bool insertNode(int num) = 0;
 	virtual bool deleteNode(int num) = 0;
 	void nodeTraversal();
