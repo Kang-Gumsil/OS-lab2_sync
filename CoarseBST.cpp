@@ -26,6 +26,42 @@ Node* CoarseBST::search(int num)
 	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
 }
 
+bool CoarseBST::insertNode(int num) // 삽입
+{
+	// p를 root부터 p를 넣을 자리까지(null만날때까지) 타고내려가기
+	// p를 갱신하기 전 q에 p를 넣음 -> q는 p의 갱신 전 노드
+	Node* p = root, * q = 0;
+	bool returnValue = false;
+	while (p)
+	{
+		q = p;
+
+		if (num == p->data)
+			return returnValue;
+
+		if (num > p->data)
+			p = p->rightChild;
+
+		else if (num < p->data)
+			p = p->leftChild;
+	}
+
+	p = new Node(num); // p는 단말노드, 자식링크는 NULL
+
+	// 조건에 따라 q와 p를 연결
+	if (!root)
+		root = p;
+
+	else if (num > q->data)
+		q->rightChild = p;
+
+	else
+		q->leftChild = p;
+
+	returnValue = true;
+	return returnValue;
+}
+
 
 bool CoarseBST::deleteNode(int num)
 {
