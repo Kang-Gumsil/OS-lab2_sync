@@ -4,7 +4,7 @@ class BST;
 class Node {
 	friend BST;
 
-private:
+protected:
 	int data;
 	Node* leftChild, * rightChild;
 
