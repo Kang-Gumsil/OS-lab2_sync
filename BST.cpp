@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 #include "BST.h"
 
 BST::BST() // 생성자, root를 null로 초기화
@@ -163,4 +161,3 @@ void BST::nodeTraversal(Node* currentNode) //workhorse
 		nodeTraversal(currentNode->rightChild);
 	}
 }
->>>>>>> Stashed changes
