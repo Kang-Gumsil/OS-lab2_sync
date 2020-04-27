@@ -1,10 +1,18 @@
 #ifndef NODE_H 
 #define NODE_H
+
 class BST;
+class CoarseBST;
+class LockBST;
+class LocklessBST;
+
 class Node {
 	friend BST;
+	friend CoarseBST;
+	friend LockBST;
+	friend LocklessBST;
 
-protected:
+private:
 	int data;
 	Node* leftChild, * rightChild;
 
