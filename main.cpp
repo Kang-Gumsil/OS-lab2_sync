@@ -1,5 +1,7 @@
 #include <iostream>
-#include "BST.h"
+#include "CoarseBST.h"
+#include "LockBST.h"
+#include "LocklessBST.h"
 using namespace std;
 
 int main()
