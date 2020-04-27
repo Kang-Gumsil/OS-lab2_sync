@@ -51,13 +51,13 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-//#include "CoarseBST.h"
-//#include "LockBST.h"
+#include "CoarseBST.h"
+#include "LockBST.h"
 #include "LocklessBST.h"
 #include <pthread.h>
 
 using namespace std;
-LocklessBST t;
+BST* BST_ptr;
 
 typedef struct __mutexArgs {
 	int numIteration;
@@ -69,10 +69,10 @@ static void* testBST(void* arg) {
 	mutexArgs *args = (mutexArgs *)arg;
 	if (args->isSync == false) { // 락X
 		for (int i = 0; i < args->numIteration; i++) {
-			t.insertNode(rand() % 1000);
+			BST_ptr->insertNode(rand() % 10000);
 		}
 		for (int i = 0; i < args->numIteration; i++) {
-			t.deleteNode(rand() % 1000);
+			BST_ptr->deleteNode(rand() % 10000);
 		}
 	}
 }
@@ -81,6 +81,11 @@ void mutex_test(int numThreads, int numIteration, bool isSync) {
 
 	// 쓰레드 배열 생성
 	pthread_t* pthreads = new pthread_t[numThreads];
+
+	// isSync에 따라 객체 생성
+	if (isSync == true) BST_ptr = new CoarseBST();
+	else BST_ptr = new LocklessBST();
+	
 
 	// 인자 생성
 	mutexArgs mutex_arg;
@@ -96,11 +101,11 @@ void mutex_test(int numThreads, int numIteration, bool isSync) {
 	for (int i = 0; i < numThreads; i++) {
 		pthread_join(pthreads[i], NULL);
 	}
-	t.nodeTraversal();
+	BST_ptr->nodeTraversal();
 }
 
 
 int main() {
 	srand((unsigned int)time(NULL));
-	mutex_test(4, 1000, false);
+	mutex_test(4, 10000, true);
 }
