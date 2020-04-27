@@ -62,6 +62,7 @@ bool BST::deleteNode(int num)
 {
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
 	Node* p = search(num);
+	bool returnValue = false;
 	if (!p)
 		return false;
 
