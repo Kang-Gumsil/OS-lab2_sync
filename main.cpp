@@ -1,4 +1,5 @@
-#include <iostream>
+
+﻿#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <pthread.h>
@@ -7,6 +8,8 @@
 #include "CoarseBST.h"
 #include "LockBST.h"
 #include "LocklessBST.h"
+
+
 
 using namespace std;
 
@@ -37,6 +40,7 @@ int main(int argc, char* argv[]) {
 		case 't':
 			numThreads = atoi(optarg);
 			break;
+
 
 		case 'c':
 			numIter = atoi(optarg);
