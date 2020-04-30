@@ -1,12 +1,14 @@
 ﻿#include "CoarseBST.h"
+#include <pthread.h>
 
 CoarseBST::CoarseBST() {
 	root = 0;
+	int rc = pthread_mutex_init(&lock, NULL);
 }
 
 Node* CoarseBST::search(int num)
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&lock);
 	// p를 root부터 차례로 내려가면서 탐색
 	Node* p = root;
 	Node* returnValue = 0;
@@ -23,7 +25,7 @@ Node* CoarseBST::search(int num)
 		else
 			p = p->leftChild;
 	}
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&lock);
 
 	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
 }
@@ -52,7 +54,7 @@ Node* CoarseBST::searchForDelete(int num)
 
 bool CoarseBST::insertNode(int num) // 삽입
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&lock);
 
 	// p를 root부터 p를 넣을 자리까지(null만날때까지) 타고내려가기
 	// p를 갱신하기 전 q에 p를 넣음 -> q는 p의 갱신 전 노드
@@ -92,7 +94,7 @@ bool CoarseBST::insertNode(int num) // 삽입
 		}
 	}
 
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&lock);
 
 	return returnValue;
 }
@@ -100,7 +102,7 @@ bool CoarseBST::insertNode(int num) // 삽입
 
 bool CoarseBST::deleteNode(int num)
 {
-	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&lock);
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
 	Node* p = searchForDelete(num);
 	bool returnValue = false;
@@ -185,7 +187,7 @@ bool CoarseBST::deleteNode(int num)
 		returnValue = true;
 	}
 
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&lock);
 
 	return returnValue;
 }
