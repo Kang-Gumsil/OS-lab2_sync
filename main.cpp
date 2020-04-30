@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// type을 쉽게 정의하기 위한 열거형
+// type을 쉽게 정의하기 위한 열거형 
 enum type {
 	coarse_grained = 0,
 	fine_grained,
