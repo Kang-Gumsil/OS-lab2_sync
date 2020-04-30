@@ -1,53 +1,4 @@
-<<<<<<< Updated upstream
-﻿//#include <iostream>
-//#include <pthread.h>
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include "CoarseBST.h"
-#include "LockBST.h"
-#include "LocklessBST.h"
-#include <pthread.h>
-using namespace std;
-
-BST* BST_ptr;
-
-
-typedef struct __mutexArgs {
-	int numIteration;
-	bool isSync;
-} mutexArgs;
-
-static void* insertNode(void* arg) {
-	mutexArgs *args = (mutexArgs *)arg;
-	for (int i = 0; i < args->numIteration; i++) {
-		BST_ptr->insertNode(rand() % 10000);
-	}
-}
-
-static void* deleteNode(void* arg) {
-	mutexArgs* args = (mutexArgs*)arg;
-	for (int i = 0; i < args->numIteration; i++) {
-		BST_ptr->deleteNode(rand() % 10000);
-	}
-}
-
-void thread_test() {
-	
-	enum BSTcat {
-		lockless_BST,
-		fineGrained_BST,
-		CoarseGrained_BST
-	};
-
-	for (int i = 0; i < 3; i++) {
-		if (i == lockless_BST) {
-
-		}
-	}
-
-=======
-﻿#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <pthread.h>
@@ -90,7 +41,7 @@ int main(int argc, char* argv[]) {
 		case 'c':
 			numIter = atoi(optarg);
 			break;
-
+		
 		default:
 			goto INVALID_ARGS;
 		}
@@ -99,17 +50,17 @@ int main(int argc, char* argv[]) {
 	if ((numThreads > 0) && (numIter > 0)) {
 		bstTest(numThreads, numIter);
 	}
-
-	else
+	
+	else 
 		goto INVALID_ARGS;
-
+	
 	return 0;
 
 	// 잘못된 main 인자의 경우 오류메시지 출력 후 프로그램 종료
-INVALID_ARGS:
-	cout << "invalid arguments!" << endl;
-	cout << "usage : ./lab2_bst -t 4 -c 1000000" << endl;
-	return -1;
+	INVALID_ARGS:
+		cout << "invalid arguments!" << endl;
+		cout << "usage : ./lab2_bst -t 4 -c 1000000" << endl;
+		return -1;
 }
 
 
@@ -120,7 +71,6 @@ double getTimeVal(struct timeval* tv, struct timeval* tv_end) {
 	double tv_e = tv_end->tv_sec + (tv_end->tv_usec / 1000000.0);
 
 	return (tv_e - tv_s);
->>>>>>> Stashed changes
 }
 
 
@@ -155,7 +105,7 @@ void bstTest(int numThreads, int numIter) {
 	for (int i = 0; i < numIter; i++) {
 		data[i] = rand() % numIter;
 	}
-
+	
 	// Insert 수행
 	// 싱글 스레드의 경우 Lockless만 수행하도록..
 	if (numThreads == 1) {
@@ -183,7 +133,7 @@ void bstTest(int numThreads, int numIter) {
 				bstPtr = new CoarseBST();
 			else if (i == 1)
 				bstPtr = new LockBST();
-			else
+			else 
 				bstPtr = new LocklessBST();
 
 			// 노드 삽입 수행
@@ -250,9 +200,9 @@ void bstTest(int numThreads, int numIter) {
 				bstPtr = new LocklessBST();
 
 			// 노드 삽입
-			for (int k = 0; k < numIter; k++)
+			for (int k = 0; k < numIter; k++) 
 				bstPtr->insertNode(data[i]);
-
+			
 
 			// 노드 삭제
 			gettimeofday(&startTime, NULL);
@@ -286,12 +236,12 @@ void bstTest(int numThreads, int numIter) {
 // 트리에 노드 삽입하는 함수
 static void* threadNodeInsert(void* tArg) {
 
-	threadArgs* args = (threadArgs*)tArg;
+	threadArgs *args = (threadArgs*)tArg;
 	BST* tree = args->tree;
 	int* dataArr = args->dataArr;
 	int start = args->start, end = args->end;
 
-	for (int i = start; i < end; i++)
+	for (int i = start; i < end; i++) 
 		tree->insertNode(dataArr[i]);
 }
 
@@ -303,12 +253,6 @@ static void* threadNodeDelete(void* tArg) {
 	int* dataArr = args->dataArr;
 	int start = args->start, end = args->end;
 
-<<<<<<< Updated upstream
-int main() {
-	srand((unsigned int)time(NULL));
-	mutex_test(4, 10000, true);
-}
-=======
 	for (int i = start; i < end; i++)
 		tree->deleteNode(dataArr[i]);
 }
@@ -366,4 +310,3 @@ int main() {
 //	}
 //	BST_ptr->nodeTraversal();
 //}
->>>>>>> Stashed changes
