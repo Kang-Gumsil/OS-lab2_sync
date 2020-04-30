@@ -1,3 +1,4 @@
+
 ﻿#include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -8,14 +9,9 @@
 #include "LockBST.h"
 #include "LocklessBST.h"
 
-using namespace std;
 
-// type을 쉽게 정의하기 위한 열거형 
-enum type {
-	coarse_grained = 0,
-	fine_grained,
-	lockless
-};
+
+using namespace std;
 
 // 쓰레드의 함수 인자로 사용될 구조체
 typedef struct __threadArgs {
@@ -44,6 +40,7 @@ int main(int argc, char* argv[]) {
 		case 't':
 			numThreads = atoi(optarg);
 			break;
+
 
 		case 'c':
 			numIter = atoi(optarg);
@@ -82,11 +79,11 @@ double getTimeVal(struct timeval* tv, struct timeval* tv_end) {
 
 
 // 결과 출력 함수
-void printResult(BST* bst, int numThreads, int numIter, int type, double time) {
+void printResult(BST* bst, int numThreads, int numIter, int type, double time, string im) {
 
 	string typeArr[] = { "Multi Thread Coarse-grained", "Multi Thread Fine-grained", "Multi Thread Lockless","Single Thread (Lockless)" };
 
-	cout << "=====  " << typeArr[type] << " experiment  =====" << endl;
+	cout << "=====  " << typeArr[type] << im << " experiment  =====" << endl;
 	cout << " Experiment info " << endl;
 	cout << "    test node           : " << numIter << endl;
 	cout << "    test threads        : " << numThreads << endl;
@@ -113,6 +110,7 @@ void bstTest(int numThreads, int numIter) {
 		data[i] = rand() % numIter;
 	}
 	
+	// Insert 수행
 	// 싱글 스레드의 경우 Lockless만 수행하도록..
 	if (numThreads == 1) {
 
@@ -126,7 +124,7 @@ void bstTest(int numThreads, int numIter) {
 		gettimeofday(&endTime, NULL);
 
 		// 결과 출력 및 객체 해제
-		printResult(bstPtr, numThreads, numIter, 3, getTimeVal(&startTime, &endTime));
+		printResult(bstPtr, numThreads, numIter, 3, getTimeVal(&startTime, &endTime), " insert");
 		delete(bstPtr);
 	}
 
@@ -139,7 +137,7 @@ void bstTest(int numThreads, int numIter) {
 				bstPtr = new CoarseBST();
 			else if (i == 1)
 				bstPtr = new LockBST();
-			else
+			else 
 				bstPtr = new LocklessBST();
 
 			// 노드 삽입 수행
@@ -165,7 +163,75 @@ void bstTest(int numThreads, int numIter) {
 			gettimeofday(&endTime, NULL);
 
 			// 결과 출력 및 객체 해제
-			printResult(bstPtr, numThreads, numIter, i, getTimeVal(&startTime, &endTime));
+			printResult(bstPtr, numThreads, numIter, i, getTimeVal(&startTime, &endTime), " insert");
+			delete(bstPtr);
+		}
+	}
+
+
+
+	// Delete 수행
+	// 싱글 스레드의 경우 Lockless만 수행하도록..
+	if (numThreads == 1) {
+
+		// 객체 생성
+		bstPtr = new LocklessBST();
+
+		// 노드 넣기
+		for (int k = 0; k < numIter; k++)
+			bstPtr->insertNode(data[k]);
+
+		// 노드 삭제
+		gettimeofday(&startTime, NULL);
+		for (int k = 0; k < numIter; k++)
+			bstPtr->deleteNode(data[k]);
+		gettimeofday(&endTime, NULL);
+
+		// 결과 출력 및 객체 해제
+		printResult(bstPtr, numThreads, numIter, 3, getTimeVal(&startTime, &endTime), " delete");
+		delete(bstPtr);
+	}
+
+	else {
+		for (int i = 0; i < 1; i++) {
+
+			// i값에 따라 객체 생성
+			if (i == 0)
+				bstPtr = new CoarseBST();
+			else if (i == 1)
+				bstPtr = new LockBST();
+			else
+				bstPtr = new LocklessBST();
+
+			// 노드 삽입
+			for (int k = 0; k < numIter; k++) 
+				bstPtr->insertNode(data[i]);
+			
+
+			// 노드 삭제
+			gettimeofday(&startTime, NULL);
+
+			for (int k = 0; k < numThreads; k++) {
+
+				// 각 쓰레드에 대한 인자 생성
+				threadArgs* tArgs = &threads[k];
+				tArgs->tree = bstPtr;
+				tArgs->dataArr = data;
+				tArgs->start = k * iter_temp;
+				tArgs->end = (k + 1) * iter_temp - 1;
+
+				// 쓰레드 생성 및 노드 넣기
+				pthread_create(&threads[k].thread, NULL, threadNodeDelete, (void*)tArgs);
+			}
+
+			// 쓰레드가 다 수행될 때까지 기다림..
+			for (int k = 0; k < numThreads; k++)
+				pthread_join(threads[k].thread, NULL);
+
+			gettimeofday(&endTime, NULL);
+
+			// 결과 출력 및 객체 해제
+			printResult(bstPtr, numThreads, numIter, i, getTimeVal(&startTime, &endTime), " delete");
 			delete(bstPtr);
 		}
 	}
