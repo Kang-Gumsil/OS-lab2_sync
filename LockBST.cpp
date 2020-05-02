@@ -91,31 +91,51 @@ bool LockBST::insertNode(int num) // 삽입
 	return returnValue;
 }
 
-
-bool LockBST::deleteNode(int num)
-{
+bool LockBST::deleteNode(int num) {
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
-	Node* p = searchForDelete(num);
-	bool returnValue = false;
 
-	if (p) {
-		// p의 부모노드 q 찾기, 만약 q의 자식 중 하나가 p면 찾은것
-		Node* q = root;
-		if (p != root)
-		{
-			while (1)
-			{
-				if (q->leftChild == p || q->rightChild == p)
-					break;
+	if (root)
+		pthread_mutex_lock(&root->nodeLock);
 
-				if (num > q->data)
-					q = q->rightChild;
+	Node* p = root, * q = 0;
+	bool returnValue = true;
 
-				else
-					q = q->leftChild;
+	while (p) {
+
+		if (num == p->data)
+			break;
+
+		else {
+			pthread_mutex_lock(&treeLock);
+			if (p) { // 쓰레드가 여러개 -> 그 사이 p 삭제되었을 수 있음
+				pthread_mutex_unlock(&treeLock); // 짝맞춰야됨
+				break;
 			}
-		}
 
+			if (q) // null 참조 -> 세그먼테이션 오류
+				pthread_mutex_unlock(&q->nodeLock);
+
+			q = p;
+			if (num > p->data)
+				p = p->rightChild;
+
+			else
+				p = p->leftChild;
+
+			pthread_mutex_lock(&p->nodeLock);
+			pthread_mutex_unlock(&treeLock);
+		}
+	}
+
+	pthread_mutex_lock(&treeLock);
+	if(p) pthread_mutex_unlock(&p->nodeLock);
+	if(q) pthread_mutex_unlock(&q->nodeLock);
+
+	// p 락 걸린 상태
+	if (!p)
+		returnValue = false;
+
+	if (returnValue) {
 		// p의 자식 수
 		int count = 0;
 		if (p->leftChild) count++;
@@ -175,8 +195,96 @@ bool LockBST::deleteNode(int num)
 		}
 
 		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
-		returnValue = true;
 	}
-
+	pthread_mutex_unlock(&treeLock);
 	return returnValue;
 }
+
+//bool LockBST::deleteNode(int num)
+//{
+//	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
+//	Node* p = searchForDelete(num);
+//	bool returnValue = false;
+//
+//	if (p) {
+//		// p의 부모노드 q 찾기, 만약 q의 자식 중 하나가 p면 찾은것
+//		Node* q = root;
+//		if (p != root)
+//		{
+//			while (1)
+//			{
+//				if (q->leftChild == p || q->rightChild == p)
+//					break;
+//
+//				if (num > q->data)
+//					q = q->rightChild;
+//
+//				else
+//					q = q->leftChild;
+//			}
+//		}
+//
+//		// p의 자식 수
+//		int count = 0;
+//		if (p->leftChild) count++;
+//		if (p->rightChild) count++;
+//
+//		if (count == 0) // 단말노드
+//		{
+//
+//			// 삭제할 노드를 삭제
+//			if (p == root)
+//				root = 0;
+//
+//			else if (p == q->rightChild)
+//				q->rightChild = 0;
+//
+//			else
+//				q->leftChild = 0;
+//		}
+//
+//		else if (count == 1) // 자식이 한개
+//		{
+//			// 삭제할 노드를 삭제하고, 그 자리를 자식노드로 채움
+//			Node* child;
+//
+//			if (p->rightChild)
+//				child = p->rightChild;
+//
+//			else
+//				child = p->leftChild;
+//
+//			// 대체한 자식노드와 삭제할 노드의 부모노드와 연결
+//			if (p == root)
+//				root = child;
+//
+//			else if (p == q->rightChild)
+//				q->rightChild = child;
+//
+//			else
+//				q->leftChild = child;
+//
+//		}
+//
+//		else // 자식이 두개
+//		{
+//			Node* temp = q = p;
+//
+//			for (p = p->leftChild; p->rightChild; p = p->rightChild)
+//				q = p;
+//
+//			if (q == temp)
+//				q->leftChild = p->leftChild;
+//
+//			else
+//				q->rightChild = p->leftChild;
+//
+//			temp->data = p->data; //데이터 대체
+//		}
+//
+//		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
+//		returnValue = true;
+//	}
+//
+//	return returnValue;
+//}
