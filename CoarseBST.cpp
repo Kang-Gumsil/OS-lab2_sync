@@ -3,7 +3,8 @@
 
 CoarseBST::CoarseBST() {
 	root = 0;
-	int rc = pthread_mutex_init(&lock, NULL);
+	lock = PTHREAD_MUTEX_INITIALIZER;
+//	int rc = pthread_mutex_init(&lock, NULL);
 }
 
 Node* CoarseBST::search(int num)
