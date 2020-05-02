@@ -8,12 +8,14 @@
 #include "LockBST.h"
 #include "LocklessBST.h"
 using namespace std;
+
 // type을 쉽게 정의하기 위한 열거형 
 enum type {
 	coarse_grained = 0,
 	fine_grained,
 	lockless
 };
+
 // 쓰레드의 함수 인자로 사용될 구조체
 typedef struct __threadArgs {
 	pthread_t thread;
@@ -21,11 +23,13 @@ typedef struct __threadArgs {
 	int* dataArr;
 	int start, end;
 } threadArgs;
+
 double getTimeVal(struct timeval* tv, struct timeval* tv_end);
 void printResult(BST* bst, int numThreads, int numIter, int type, double time);
 void bstTest(int numThreads, int numIter);
 static void* threadNodeInsert(void* tArg);
 static void* threadNodeDelete(void* tArg);
+
 int main(int argc, char* argv[]) {
 	char op;
 	int numThreads = 0, numIter = 0;
@@ -53,12 +57,14 @@ int main(int argc, char* argv[]) {
 		cout << "usage : ./lab2_bst -t 4 -c 1000000" << endl;
 		return -1;
 }
+
 // 수행된 시간을 구해주는 함수
 double getTimeVal(struct timeval* tv, struct timeval* tv_end) {
 	double tv_s = tv->tv_sec + (tv->tv_usec / 1000000.0);
 	double tv_e = tv_end->tv_sec + (tv_end->tv_usec / 1000000.0);
 	return (tv_e - tv_s);
 }
+
 // 결과 출력 함수
 void printResult(BST* bst, int numThreads, int numIter, int type, double time) {
 	string typeArr[] = { "Multi Thread Coarse-grained", "Multi Thread Fine-grained", "Multi Thread Lockless","Single Thread (Lockless)" };
@@ -72,6 +78,7 @@ void printResult(BST* bst, int numThreads, int numIter, int type, double time) {
 	//result_count = lab2_node_print_inorder(tree);
 	//printf("    total node count    : %d \n\n", node_count);
 }
+
 void bstTest(int numThreads, int numIter) {
 	BST* bstPtr;
 	int iter_temp = numIter / numThreads;
@@ -128,6 +135,7 @@ void bstTest(int numThreads, int numIter) {
 		}
 	}
 }
+
 // 트리에 노드 삽입하는 함수
 static void* threadNodeInsert(void* tArg) {
 	threadArgs *args = (threadArgs*)tArg;
@@ -137,6 +145,7 @@ static void* threadNodeInsert(void* tArg) {
 	for (int i = start; i < end; i++) 
 		tree->insertNode(dataArr[i]);
 }
+
 // 트리에 노드 삭제하는 함수
 static void* threadNodeDelete(void* tArg) {
 	threadArgs* args = (threadArgs*)tArg;
