@@ -31,6 +31,10 @@ static void* threadNodeInsert(void* tArg);
 static void* threadNodeDelete(void* tArg);
 
 int main(int argc, char* argv[]) {
+
+	// 시드 설정
+	srand((unsigned int)time(NULL));
+
 	char op;
 	int numThreads = 0, numIter = 0;
 	while ((op = getopt(argc, argv, "t:c:")) != -1) {
@@ -107,7 +111,7 @@ void bstTest(int numThreads, int numIter) {
 	}
 	// 멀티 스레드의 경우 Lockless, Coarse-grained, Fine-grained에 대해 수행
 	else {
-		for (int i = 0; i < 1; i++) {
+		for (int i = 1; i < 2; i++) {
 			// i값에 따라 객체 생성
 			if (i == 0)		  bstPtr = new CoarseBST();
 			else if (i == 1)  bstPtr = new LockBST();
