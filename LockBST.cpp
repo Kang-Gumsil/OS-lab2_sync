@@ -1,7 +1,7 @@
 ﻿#include "LockBST.h"
 
 LockBST::LockBST() {
-	root = 0;
+	int rc = pthread_mutex_init(&treeLock, NULL);
 }
 
 Node* LockBST::search(int num)
@@ -94,48 +94,42 @@ bool LockBST::insertNode(int num) // 삽입
 bool LockBST::deleteNode(int num) {
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
 
+	pthread_mutex_lock(&treeLock);
 	if (root)
 		pthread_mutex_lock(&root->nodeLock);
+	pthread_mutex_unlock(&treeLock);
 
 	Node* p = root, * q = 0;
 	bool returnValue = true;
 
 	while (p) {
-		pthread_mutex_lock(&treeLock);
-		if (p)
-		{
-			pthread_mutex_lock(&p->nodeLock);
-			if (num == p->data)
-				break;
+		if (num == p->data) 
+			break;		
+			
+		else {
+			if (q) // null 참조 -> 세그먼테이션 오류
+				pthread_mutex_unlock(&q->nodeLock);
+
+			q = p;
+			if (num > p->data)
+				p = p->rightChild;
+
+			else
+				p = p->leftChild;
+
+			if (p)
+				pthread_mutex_lock(&p->nodeLock);
 
 			else {
-				if (q) // null 참조 -> 세그먼테이션 오류
-					pthread_mutex_unlock(&q->nodeLock); 
-
-				q = p;
-				if (num > p->data)
-					p = p->rightChild;
-
-				else
-					p = p->leftChild;
-
-				if(p)
-					pthread_mutex_lock(&p->nodeLock);
-				else
-					if(q)
-						pthread_mutex_lock(&q->nodeLock);
-
-				pthread_mutex_unlock(&treeLock);
+				if (q) {
+					pthread_mutex_unlock(&q->nodeLock);
+				}
 			}
 		}
-		else break;		
 	}
 
-	pthread_mutex_lock(&treeLock);
-	if(p) pthread_mutex_unlock(&p->nodeLock);
-	if(q) pthread_mutex_unlock(&q->nodeLock);
 
-	// p 락 걸린 상태
+	// p, q가 락되어 있는 상태
 	if (!p)
 		returnValue = false;
 
@@ -157,6 +151,9 @@ bool LockBST::deleteNode(int num) {
 
 			else
 				q->leftChild = 0;
+
+			if (q)
+				pthread_mutex_unlock(&q->nodeLock);
 		}
 
 		else if (count == 1) // 자식이 한개
@@ -169,7 +166,8 @@ bool LockBST::deleteNode(int num) {
 
 			else
 				child = p->leftChild;
-
+		
+			// 이 떄, 차일드에 락을 걸어야 하는지???
 			// 대체한 자식노드와 삭제할 노드의 부모노드와 연결
 			if (p == root)
 				root = child;
@@ -180,12 +178,18 @@ bool LockBST::deleteNode(int num) {
 			else
 				q->leftChild = child;
 
+			if (q)
+				pthread_mutex_unlock(&q->nodeLock);
+
 		}
 
 		else // 자식이 두개
 		{
-			Node* temp = q = p;
+			if (q)
+				pthread_mutex_unlock(&q->nodeLock);
 
+			Node* temp = q = p;
+			//q언락
 			for (p = p->leftChild; p->rightChild; p = p->rightChild)
 				q = p;
 
@@ -196,99 +200,12 @@ bool LockBST::deleteNode(int num) {
 				q->rightChild = p->leftChild;
 
 			temp->data = p->data; //데이터 대체
+			pthread_mutex_unlock(&temp->nodeLock);
 		}
-
+		// p 언락
+		pthread_mutex_unlock(&p->nodeLock);
 		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
 	}
-	pthread_mutex_unlock(&treeLock);
+
 	return returnValue;
 }
-
-//bool LockBST::deleteNode(int num)
-//{
-//	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
-//	Node* p = searchForDelete(num);
-//	bool returnValue = false;
-//
-//	if (p) {
-//		// p의 부모노드 q 찾기, 만약 q의 자식 중 하나가 p면 찾은것
-//		Node* q = root;
-//		if (p != root)
-//		{
-//			while (1)
-//			{
-//				if (q->leftChild == p || q->rightChild == p)
-//					break;
-//
-//				if (num > q->data)
-//					q = q->rightChild;
-//
-//				else
-//					q = q->leftChild;
-//			}
-//		}
-//
-//		// p의 자식 수
-//		int count = 0;
-//		if (p->leftChild) count++;
-//		if (p->rightChild) count++;
-//
-//		if (count == 0) // 단말노드
-//		{
-//
-//			// 삭제할 노드를 삭제
-//			if (p == root)
-//				root = 0;
-//
-//			else if (p == q->rightChild)
-//				q->rightChild = 0;
-//
-//			else
-//				q->leftChild = 0;
-//		}
-//
-//		else if (count == 1) // 자식이 한개
-//		{
-//			// 삭제할 노드를 삭제하고, 그 자리를 자식노드로 채움
-//			Node* child;
-//
-//			if (p->rightChild)
-//				child = p->rightChild;
-//
-//			else
-//				child = p->leftChild;
-//
-//			// 대체한 자식노드와 삭제할 노드의 부모노드와 연결
-//			if (p == root)
-//				root = child;
-//
-//			else if (p == q->rightChild)
-//				q->rightChild = child;
-//
-//			else
-//				q->leftChild = child;
-//
-//		}
-//
-//		else // 자식이 두개
-//		{
-//			Node* temp = q = p;
-//
-//			for (p = p->leftChild; p->rightChild; p = p->rightChild)
-//				q = p;
-//
-//			if (q == temp)
-//				q->leftChild = p->leftChild;
-//
-//			else
-//				q->rightChild = p->leftChild;
-//
-//			temp->data = p->data; //데이터 대체
-//		}
-//
-//		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
-//		returnValue = true;
-//	}
-//
-//	return returnValue;
-//}
