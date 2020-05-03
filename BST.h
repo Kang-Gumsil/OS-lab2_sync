@@ -8,6 +8,7 @@ using namespace std;
 class BST {
 protected:
 	Node* root;
+	int nodeCount;
 
 public:
 	BST();
@@ -15,8 +16,10 @@ public:
 	virtual Node* searchForDelete(int num) = 0;
 	virtual bool insertNode(int num) = 0;
 	virtual bool deleteNode(int num) = 0;
-	void nodeTraversal();
+	int nodeTraversal();
 	void nodeTraversal(Node* currentNode);
+	void nodePrint();
+	void nodePrint(Node* currentNode);
 };
 
 #endif
