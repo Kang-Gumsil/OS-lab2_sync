@@ -77,10 +77,8 @@ void printResult(BST* bst, int numThreads, int numIter, int type, double time, s
 	cout << "    test node           : " << numIter << endl;
 	cout << "    test threads        : " << numThreads << endl;
 	cout << "    execution time      : " << time << " seconds" << endl;
-	// 노드 개수 출력?
-	//printf("\n BST inorder iteration result : \n");
-	//result_count = lab2_node_print_inorder(tree);
-	//printf("    total node count    : %d \n\n", node_count);
+	cout << " BST inorder iteration result :" << endl;
+	cout << "    total node count    : " << bst->nodeTraversal() << endl;
 }
 
 void bstTest(int numThreads, int numIter) {
