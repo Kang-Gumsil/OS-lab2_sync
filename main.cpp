@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <pthread.h>
@@ -52,14 +52,14 @@ int main(int argc, char* argv[]) {
 	if ((numThreads > 0) && (numIter > 0)) {
 		bstTest(numThreads, numIter);
 	}
-	else 
+	else
 		goto INVALID_ARGS;
 	return 0;
 	// 잘못된 main 인자의 경우 오류메시지 출력 후 프로그램 종료
-	INVALID_ARGS:
-		cout << "invalid arguments!" << endl;
-		cout << "usage : ./lab2_bst -t 4 -c 1000000" << endl;
-		return -1;
+INVALID_ARGS:
+	cout << "invalid arguments!" << endl;
+	cout << "usage : ./lab2_bst -t 4 -c 1000000" << endl;
+	return -1;
 }
 
 // 수행된 시간을 구해주는 함수
@@ -109,11 +109,11 @@ void bstTest(int numThreads, int numIter) {
 	}
 	// 멀티 스레드의 경우 Lockless, Coarse-grained, Fine-grained에 대해 수행
 	else {
-		for (int i = 1; i < 2; i++) {
+		for (int i = 0; i < 3; i++) {
 			// i값에 따라 객체 생성
-			if (i == 0)		  bstPtr = new CoarseBST();
+			if (i == 0)		    bstPtr = new CoarseBST();
 			else if (i == 1)  bstPtr = new LockBST();
-			else			  bstPtr = new LocklessBST();
+			else		      	  bstPtr = new LocklessBST();
 
 			// 노드 삽입 수행
 			gettimeofday(&startTime, NULL);
@@ -165,12 +165,12 @@ void bstTest(int numThreads, int numIter) {
 
 	// 멀티 스레드의 경우 Lockless, Coarse-grained, Fine-grained에 대해 수행
 	else {
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 3; i++) {
 
 			// i값에 따라 객체 생성 및 노드 삽입 수행
-			if (i == 0)		  bstPtr = new CoarseBST();
+			if (i == 0)		    bstPtr = new CoarseBST();
 			else if (i == 1)  bstPtr = new LockBST();
-			else			  bstPtr = new LocklessBST();
+			else			        bstPtr = new LocklessBST();
 
 			for (int k = 0; k < numIter; k++)
 				bstPtr->insertNode(data[k]);
@@ -207,7 +207,7 @@ static void* threadNodeInsert(void* tArg) {
 	BST* tree = args->tree;
 	int* dataArr = args->dataArr;
 	int start = args->start, end = args->end;
-	for (int i = start; i < end; i++) 
+	for (int i = start; i < end; i++)
 		tree->insertNode(dataArr[i]);
 }
 
