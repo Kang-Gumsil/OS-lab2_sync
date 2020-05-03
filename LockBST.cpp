@@ -359,7 +359,7 @@ bool LockBST::deleteNode(int num)
 
 		returnValue = true;
 	}
-	pthread_mutex_lock(&q->nodeLock);
+	pthread_mutex_unlock(&q->nodeLock);
 
 	return returnValue;
 }
