@@ -101,30 +101,34 @@ bool LockBST::deleteNode(int num) {
 	bool returnValue = true;
 
 	while (p) {
-
-		if (num == p->data)
-			break;
-
-		else {
-			pthread_mutex_lock(&treeLock);
-			if (p) { // 쓰레드가 여러개 -> 그 사이 p 삭제되었을 수 있음
-				pthread_mutex_unlock(&treeLock); // 짝맞춰야됨
-				break;
-			}
-
-			if (q) // null 참조 -> 세그먼테이션 오류
-				pthread_mutex_unlock(&q->nodeLock);
-
-			q = p;
-			if (num > p->data)
-				p = p->rightChild;
-
-			else
-				p = p->leftChild;
-
+		pthread_mutex_lock(&treeLock);
+		if (p)
+		{
 			pthread_mutex_lock(&p->nodeLock);
-			pthread_mutex_unlock(&treeLock);
+			if (num == p->data)
+				break;
+
+			else {
+				if (q) // null 참조 -> 세그먼테이션 오류
+					pthread_mutex_unlock(&q->nodeLock); 
+
+				q = p;
+				if (num > p->data)
+					p = p->rightChild;
+
+				else
+					p = p->leftChild;
+
+				if(p)
+					pthread_mutex_lock(&p->nodeLock);
+				else
+					if(q)
+						pthread_mutex_lock(&q->nodeLock);
+
+				pthread_mutex_unlock(&treeLock);
+			}
 		}
+		else break;		
 	}
 
 	pthread_mutex_lock(&treeLock);
