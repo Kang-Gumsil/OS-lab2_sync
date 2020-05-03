@@ -2,7 +2,6 @@
 #include <pthread.h>
 
 CoarseBST::CoarseBST() {
-	root = 0;
 	int rc = pthread_mutex_init(&lock, NULL);
 }
 
@@ -104,27 +103,27 @@ bool CoarseBST::deleteNode(int num)
 {
 	pthread_mutex_lock(&lock);
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
-	Node* p = searchForDelete(num);
-	bool returnValue = false;
+	Node* p = root, * q = 0;
+	bool returnValue = true;
 
-	if (p) {
-		// p의 부모노드 q 찾기, 만약 q의 자식 중 하나가 p면 찾은것
-		Node* q = root;
-		if (p != root)
-		{
-			while (1)
-			{
-				if (q->leftChild == p || q->rightChild == p)
-					break;
+	while (p) {
+		if (num == p->data)
+			break;
 
-				if (num > q->data)
-					q = q->rightChild;
-
-				else
-					q = q->leftChild;
-			}
+		else if (num > p->data) {
+			q = p;
+			p = p->rightChild;
 		}
 
+		else {
+			q = p;
+			p = p->leftChild;
+		}
+	}
+
+	if (!p)
+		returnValue = false;
+	if (returnValue) {
 		// p의 자식 수
 		int count = 0;
 		if (p->leftChild) count++;
@@ -184,9 +183,7 @@ bool CoarseBST::deleteNode(int num)
 		}
 
 		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
-		returnValue = true;
 	}
-
 	pthread_mutex_unlock(&lock);
 
 	return returnValue;
