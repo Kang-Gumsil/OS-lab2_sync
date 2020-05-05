@@ -1,4 +1,16 @@
-﻿#ifndef COARSE_BST_H
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32181893
+*	    Student name : 박지은
+*
+*   CoarseBST.cpp :
+*       - Lab2 source file for Coarse-grained lock BST.
+*
+*
+*/
+
+#ifndef COARSE_BST_H
 #define COARSE_BST_H
 #include <iostream>
 #include <pthread.h>

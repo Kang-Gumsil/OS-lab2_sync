@@ -1,4 +1,16 @@
-﻿#ifndef FINE_BST_H
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   FineBST.cpp :
+*       - Lab2 source file for Fine-grained lock BST.
+*
+*
+*/
+
+#ifndef FINE_BST_H
 #define FINE_BST_H
 #include <iostream>
 #include <pthread.h>

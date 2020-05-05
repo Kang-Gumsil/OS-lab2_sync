@@ -1,4 +1,16 @@
-﻿#include "LocklessBST.h"
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   LocklessBST.cpp :
+*       - Lab2 source file for Lockless BST.
+*
+*
+*/
+
+#include "LocklessBST.h"
 
 LocklessBST::LocklessBST() { }
 

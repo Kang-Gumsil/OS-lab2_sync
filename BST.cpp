@@ -1,3 +1,15 @@
+/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   BST.cpp :
+*       - Lab2 source file for BST.
+*
+*   
+*/
+
 #include "BST.h"
 
 BST::BST() { // 생성자, root를 null로 초기화

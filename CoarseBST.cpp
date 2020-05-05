@@ -1,4 +1,16 @@
-﻿#include "CoarseBST.h"
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32181893
+*	    Student name : 박지은
+*
+*   CoarseBST.cpp :
+*       - Lab2 source file for Coarse-grained lock BST.
+*
+*
+*/
+
+#include "CoarseBST.h"
 #include <pthread.h>
 
 CoarseBST::CoarseBST() {

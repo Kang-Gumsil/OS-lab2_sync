@@ -1,4 +1,16 @@
-﻿#ifndef NODE_H 
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   Node.cpp :
+*       - Lab2 source file for Node.
+*
+*
+*/
+
+#ifndef NODE_H 
 #define NODE_H
 
 #include <pthread.h>

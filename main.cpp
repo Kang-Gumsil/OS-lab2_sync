@@ -1,4 +1,16 @@
-﻿#include <iostream>
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009
+*	    Student name : 강금실
+*
+*   main.cpp :
+*       - Lab2 source file for main.
+*
+*
+*/
+
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <pthread.h>
@@ -207,7 +219,7 @@ static void* threadNodeInsert(void* tArg) {
 	BST* tree = args->tree;
 	int* dataArr = args->dataArr;
 	int start = args->start, end = args->end;
-	for (int i = start; i < end; i++)
+	for (int i = start; i <= end; i++)
 		tree->insertNode(dataArr[i]);
 }
 
@@ -217,6 +229,6 @@ static void* threadNodeDelete(void* tArg) {
 	BST* tree = args->tree;
 	int* dataArr = args->dataArr;
 	int start = args->start, end = args->end;
-	for (int i = start; i < end; i++)
+	for (int i = start; i <= end; i++)
 		tree->deleteNode(dataArr[i]);
 }

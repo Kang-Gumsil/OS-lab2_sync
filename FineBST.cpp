@@ -1,3 +1,15 @@
+/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   FineBST.cpp :
+*       - Lab2 source file for Fine-grained lock BST.
+*
+*
+*/
+
 #include "FineBST.h"
 #include <pthread.h>
 
@@ -16,7 +28,6 @@ bool FineBST::insertNode(int num) // 삽입
 	// root가 비어있다면 root에 새로운 노드 추가
 	if (root == NULL) {
 		p = new Node(num);
-		//피에 대한 락
 		root = p;
 		rootAdd = true;
 	}
@@ -77,10 +88,6 @@ bool FineBST::insertNode(int num) // 삽입
 	return returnValue;
 }
   
- 
-// 트리락 없애고
-// 차일드에 대한 락 없애고
-// 노드 하나에 대해 q언락
 
 bool FineBST::deleteNode(int num) {
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴

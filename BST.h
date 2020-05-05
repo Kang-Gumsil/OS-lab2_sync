@@ -1,4 +1,16 @@
-﻿#ifndef BST_H
+﻿/*
+*	Operating System Lab
+*	    Lab2 (Synchronization)
+*	    Student id : 32180009, 32181893
+*	    Student name : 강금실, 박지은
+*
+*   BST.cpp :
+*       - Lab2 source file for BST.
+*
+*
+*/
+
+#ifndef BST_H
 #define BST_H
 #include <iostream>
 #include "Node.h"
