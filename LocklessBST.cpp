@@ -1,52 +1,6 @@
 ﻿#include "LocklessBST.h"
 
-LocklessBST::LocklessBST() {
-	root = 0;
-}
-
-Node* LocklessBST::search(int num)
-{
-	// p를 root부터 차례로 내려가면서 탐색
-	Node* p = root;
-	Node* returnValue = 0;
-	while (p)
-	{
-		if (p->data == num) {
-			returnValue = p;
-			break;
-		}
-
-		else if (num > p->data)
-			p = p->rightChild;
-
-		else
-			p = p->leftChild;
-	}
-
-	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
-}
-
-Node* LocklessBST::searchForDelete(int num)
-{
-	// p를 root부터 차례로 내려가면서 탐색
-	Node* p = root;
-	Node* returnValue = 0;
-	while (p)
-	{
-		if (p->data == num) {
-			returnValue = p;
-			break;
-		}
-
-		else if (num > p->data)
-			p = p->rightChild;
-
-		else
-			p = p->leftChild;
-	}
-
-	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
-}
+LocklessBST::LocklessBST() { }
 
 bool LocklessBST::insertNode(int num) // 삽입
 {
@@ -56,13 +10,12 @@ bool LocklessBST::insertNode(int num) // 삽입
 	bool returnValue = true;
 	while (p)
 	{
-		q = p;
-
 		if (num == p->data) {
 			returnValue = false;
 			break;
 		}
 
+		q = p;
 
 		if (num > p->data)
 			p = p->rightChild;
@@ -101,14 +54,13 @@ bool LocklessBST::deleteNode(int num)
 		if (num == p->data)
 			break;
 
-		else if (num > p->data) {
-			q = p;
-			p = p->rightChild;
-		}
-
 		else {
 			q = p;
-			p = p->leftChild;
+			if (num > p->data) 
+				p = p->rightChild;
+			
+			else 
+				p = p->leftChild;
 		}
 	}
 
@@ -174,6 +126,7 @@ bool LocklessBST::deleteNode(int num)
 		}
 
 		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
+		p = 0;
 	}
 
 	return returnValue;

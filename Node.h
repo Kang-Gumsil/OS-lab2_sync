@@ -5,13 +5,13 @@
 
 class BST;
 class CoarseBST;
-class LockBST;
+class FineBST;
 class LocklessBST;
 
 class Node {
 	friend BST;
 	friend CoarseBST;
-	friend LockBST;
+	friend FineBST;
 	friend LocklessBST;
 
 private:

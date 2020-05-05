@@ -9,8 +9,6 @@ using namespace std;
 class LocklessBST : public BST {
 public:
 	LocklessBST();
-	Node* search(int num);
-	Node* searchForDelete(int num);
 	bool insertNode(int num);
 	bool deleteNode(int num);
 

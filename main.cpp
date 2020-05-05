@@ -5,16 +5,9 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include "CoarseBST.h"
-#include "LockBST.h"
+#include "FineBST.h"
 #include "LocklessBST.h"
 using namespace std;
-
-// type을 쉽게 정의하기 위한 열거형 
-enum type {
-	coarse_grained = 0,
-	fine_grained,
-	lockless
-};
 
 // 쓰레드의 함수 인자로 사용될 구조체
 typedef struct __threadArgs {
@@ -49,12 +42,15 @@ int main(int argc, char* argv[]) {
 			goto INVALID_ARGS;
 		}
 	}
+
 	if ((numThreads > 0) && (numIter > 0)) {
 		bstTest(numThreads, numIter);
 	}
+
 	else
 		goto INVALID_ARGS;
 	return 0;
+
 	// 잘못된 main 인자의 경우 오류메시지 출력 후 프로그램 종료
 INVALID_ARGS:
 	cout << "invalid arguments!" << endl;
@@ -106,13 +102,14 @@ void bstTest(int numThreads, int numIter) {
 		// 결과 출력 및 객체 해제
 		printResult(bstPtr, numThreads, numIter, 3, getTimeVal(&startTime, &endTime), " insert");
 		delete(bstPtr);
+		bstPtr = 0;
 	}
 	// 멀티 스레드의 경우 Lockless, Coarse-grained, Fine-grained에 대해 수행
 	else {
 		for (int i = 0; i < 3; i++) {
 			// i값에 따라 객체 생성
 			if (i == 0)		    bstPtr = new CoarseBST();
-			else if (i == 1)  bstPtr = new LockBST();
+			else if (i == 1)  bstPtr = new FineBST();
 			else		      	  bstPtr = new LocklessBST();
 
 			// 노드 삽입 수행
@@ -123,8 +120,8 @@ void bstTest(int numThreads, int numIter) {
 				threadArgs* tArgs = &threads[k];
 				tArgs->tree = bstPtr;
 				tArgs->dataArr = data;
-				tArgs->start = k * iter_temp;
-				tArgs->end = (k + 1) * iter_temp - 1;
+				tArgs->start = k * iter_temp; //25
+				tArgs->end = (k + 1) * iter_temp - 1; //
 
 				// 쓰레드 생성 및 노드 넣기
 				pthread_create(&threads[k].thread, NULL, threadNodeInsert, (void*)tArgs);
@@ -139,6 +136,7 @@ void bstTest(int numThreads, int numIter) {
 			// 결과 출력 및 객체 해제
 			printResult(bstPtr, numThreads, numIter, i, getTimeVal(&startTime, &endTime), " insert");
 			delete(bstPtr);
+			bstPtr = 0;
 		}
 	}
 
@@ -161,6 +159,7 @@ void bstTest(int numThreads, int numIter) {
 		// 결과 출력 및 객체 해제
 		printResult(bstPtr, numThreads, numIter, 3, getTimeVal(&startTime, &endTime), " delete");
 		delete(bstPtr);
+		bstPtr = 0;
 	}
 
 	// 멀티 스레드의 경우 Lockless, Coarse-grained, Fine-grained에 대해 수행
@@ -169,8 +168,8 @@ void bstTest(int numThreads, int numIter) {
 
 			// i값에 따라 객체 생성 및 노드 삽입 수행
 			if (i == 0)		    bstPtr = new CoarseBST();
-			else if (i == 1)  bstPtr = new LockBST();
-			else			        bstPtr = new LocklessBST();
+			else if (i == 1)    bstPtr = new FineBST();
+			else			    bstPtr = new LocklessBST();
 
 			for (int k = 0; k < numIter; k++)
 				bstPtr->insertNode(data[k]);
@@ -197,6 +196,7 @@ void bstTest(int numThreads, int numIter) {
 			// 결과 출력 및 객체 해제
 			printResult(bstPtr, numThreads, numIter, i, getTimeVal(&startTime, &endTime), " Delete");
 			delete(bstPtr);
+			bstPtr = 0;
 		}
 	}
 }
