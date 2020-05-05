@@ -12,8 +12,6 @@ private :
 	pthread_mutex_t lock;
 public:
 	CoarseBST();
-	Node* search(int num);
-	Node* searchForDelete(int num);
 	bool insertNode(int num);
 	bool deleteNode(int num);
 

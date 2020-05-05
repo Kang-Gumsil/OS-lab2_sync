@@ -1,95 +1,22 @@
-#include "LockBST.h"
+#include "FineBST.h"
 #include <pthread.h>
 
-LockBST::LockBST() {
+FineBST::FineBST() {
 	pthread_mutex_init(&treeLock, NULL);
 }
 
-//Node* LockBST::search(int num)
-//{
-//	// p를 root부터 차례로 내려가면서 탐색
-//	Node* p = root;
-//	Node* returnValue = 0;
-//	while (p){
-//		if (p->data == num) {
-//			returnValue = p;
-//			break;
-//		}
-//
-//		else if (num > p->data)
-//			p = p->rightChild;
-//
-//		else
-//			p = p->leftChild;
-//	}
-//
-//	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
-//}
-
-Node* LockBST::search(int num)
-{
-	// p를 root부터 차례로 내려가면서 탐색
-	pthread_mutex_lock(&treeLock);
-	pthread_mutex_lock(&root->nodeLock);
-	pthread_mutex_unlock(&treeLock);
-	Node* p = root, *p_parent = 0;
-	Node* returnValue = 0;
-
-	while (p) {
-
-		p_parent = p;
-
-		if (p->data == num) {
-			returnValue = p;
-			break;
-		}
-
-
-		else if (num > p->data) {
-			p = p->rightChild;
-		}
-
-		else {
-			p = p->leftChild;
-		}
-
-		pthread_mutex_lock(&p->nodeLock);
-		pthread_mutex_unlock(&p_parent->nodeLock);
-	}
-	pthread_mutex_unlock(&p->nodeLock);
-	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
-}
-
-
-Node* LockBST::searchForDelete(int num)
-{
-	// p를 root부터 차례로 내려가면서 탐색
-	Node* p = root;
-	Node* returnValue = 0;
-	while (p){
-		if (p->data == num) {
-			returnValue = p;
-			break;
-		}
-		else if (num > p->data)
-			p = p->rightChild;
-		else
-			p = p->leftChild;
-	}
-	return returnValue; // 원하는 값을 찾았으면 p리턴, p가 null이 될 때까지 못찾으면 탐색 실패, null 리턴
-}
-
-bool LockBST::insertNode(int num) // 삽입
+bool FineBST::insertNode(int num) // 삽입
 {
 	pthread_mutex_lock(&treeLock);	// 트리에 대한 lock
 
 	bool rootAdd = false;
-	Node* p = root, *q = 0;
+	Node* p = root, * q = 0;
 	bool returnValue = true;
 
 	// root가 비어있다면 root에 새로운 노드 추가
 	if (root == NULL) {
 		p = new Node(num);
+		//피에 대한 락
 		root = p;
 		rootAdd = true;
 	}
@@ -105,7 +32,7 @@ bool LockBST::insertNode(int num) // 삽입
 
 		// p로 root부터 삽입할 위치(NULL이 나올 때까지) 찾아가기
 		// q는 p의 부모 노드, p가 NULL이 되면 종료
-		while (p != NULL){
+		while (p != NULL) {
 
 			q = p;			// q를 p 위치로 이동
 
@@ -146,29 +73,44 @@ bool LockBST::insertNode(int num) // 삽입
 		}
 		// 삽입 완료 후 새로 삽입된 노드의 부모 노드에 대한 lock 풀어줌
 		pthread_mutex_unlock(&q->nodeLock);
-  }
+	}
+	return returnValue;
 }
   
-  
-bool LockBST::deleteNode(int num) {
+ 
+// 트리락 없애고
+// 차일드에 대한 락 없애고
+// 노드 하나에 대해 q언락
+
+bool FineBST::deleteNode(int num) {
 	// 삭제할 노드 p 찾고, 만약 없으면 false 리턴
 	if (root)
 		pthread_mutex_lock(&root->nodeLock);
+
 	Node* p = root, * q = 0;
 	bool returnValue = true;
+
 	while (p) {
 		if (num == p->data)
 			break;
+
 		else {
-			if (q) // null 참조 -> 세그먼테이션 오류
+			if (q) {
+				// null 참조 -> 세그먼테이션 오류
 				pthread_mutex_unlock(&q->nodeLock);
+			}
+
 			q = p;
+
 			if (num > p->data)
 				p = p->rightChild;
+
 			else
 				p = p->leftChild;
+
 			if (p)
 				pthread_mutex_lock(&p->nodeLock);
+
 			else {
 				if (q) {
 					pthread_mutex_unlock(&q->nodeLock);
@@ -176,9 +118,11 @@ bool LockBST::deleteNode(int num) {
 			}
 		}
 	}
+
 	// p, q가 락되어 있는 상태
 	if (!p)
 		returnValue = false;
+
 	if (returnValue) {
 		// p의 자식 수
 		int count = 0;
@@ -189,13 +133,20 @@ bool LockBST::deleteNode(int num) {
 			// 삭제할 노드를 삭제
 			if (p == root)
 				root = 0;
+
 			else if (p == q->rightChild)
 				q->rightChild = 0;
+
 			else
 				q->leftChild = 0;
+
 			if (q)
 				pthread_mutex_unlock(&q->nodeLock);
+
+			// p 언락
+			pthread_mutex_unlock(&p->nodeLock);
 		}
+
 		else if (count == 1) // 자식이 한개
 		{
 			// 삭제할 노드를 삭제하고, 그 자리를 자식노드로 채움
@@ -204,16 +155,22 @@ bool LockBST::deleteNode(int num) {
 				child = p->rightChild;
 			else
 				child = p->leftChild;
-			// 이 떄, 차일드에 락을 걸어야 하는지???
+
 			// 대체한 자식노드와 삭제할 노드의 부모노드와 연결
 			if (p == root)
 				root = child;
+
 			else if (p == q->rightChild)
 				q->rightChild = child;
+
 			else
 				q->leftChild = child;
+
 			if (q)
 				pthread_mutex_unlock(&q->nodeLock);
+
+			// p 언락
+			pthread_mutex_unlock(&p->nodeLock);
 		}
 		else // 자식이 두개
 		{
@@ -230,11 +187,9 @@ bool LockBST::deleteNode(int num) {
 			temp->data = p->data; //데이터 대체
 			pthread_mutex_unlock(&temp->nodeLock);
 		}
-		// p 언락
-		pthread_mutex_unlock(&p->nodeLock);
+		
 		delete p; // 실제로 삭제할 노드가 삭제된 것이 아니라 대체될 노드가 삭제 
 	}
   
 	return returnValue;
 }
-
